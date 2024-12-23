@@ -1,13 +1,40 @@
 #include <iostream>
-
+#include <fstream>
+#include <vector>
+#include <cmath>
+#define ull unsigned long long
 using namespace std;
 
 
+int offset_bits,indexing_bits;
+
+struct cache_line {    // Represents a cache line (equivalent to a set)
+    int associativity,valid,tag;
+    cache_line(int associativity):associativity(associativity){}
+    // TODO: Define data structures for cache line
+    // - Valid bits for each way
+    // - Tags for each way
+    // - Reference bits for clock policy
+    // - Clock pointer for replacement
+};
+vector<cache_line> Cache;  // All cache lines (sets)
+
 void parse_cache_config(const string &path_cache) {
     // TODO: Read config file and initialize cache
+    ifstream fin;
+    fin.open(path_cache,ios::in);
+    string tmp;
+    int Address_bits,Block_size,Cache_sets,Associativity;
     // - Read: Address_bits, Block_size, Cache_sets, Associativity
+    fin >> tmp >> Address_bits;
+    fin >> tmp >> Block_size;
+    fin >> tmp >> Cache_sets;
+    fin >> tmp >> Associativity;
     // - Calculate: Offset_bits, Indexing_bits
+    offset_bits = log2(Block_size);
+    indexing_bits = ceil(log2(Cache_sets));
     // - Initialize Cache array
+    Cache.resize(Cache_sets, cache_line(Associativity));
 }
 
 
@@ -17,15 +44,6 @@ void parse_reference_list(const string &path_ref) {
     // - Store both original and converted forms
 }
 
-
-struct cache_line {    // Represents a cache line (equivalent to a set)
-    // TODO: Define data structures for cache line
-    // - Valid bits for each way
-    // - Tags for each way
-    // - Reference bits for clock policy
-    // - Clock pointer for replacement
-};
-vector<cache_line> Cache;  // All cache lines (sets)
 
 
 
@@ -58,10 +76,16 @@ void output(const string &path_rpt, ull Mask) {
 }
 
 int main(int argc, char *argv[]){
+    string config,output,input;
+    // for(int i=0;i<argc;i++){
+    //     cout << argv[i] << endl;
+    // }
+    config = argv[1];
+    input = argv[2];
+    output = argv[3];
+    parse_cache_config(config);
+    parse_reference_list(input);
 
-    for(auto i=0;i<argc;i++){
-        cout << argv[i] << endl;
-    }
 
     return 0;
 }
