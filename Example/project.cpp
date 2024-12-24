@@ -7,10 +7,18 @@ using namespace std;
 
 
 int offset_bits,indexing_bits;
+vector<ull> reference;
+vector<string> refstring;
+vector<bool> results;
 
 struct cache_line {    // Represents a cache line (equivalent to a set)
-    int associativity,valid,tag;
-    cache_line(int associativity):associativity(associativity){}
+    int associativity;
+    vector<bool> valid;
+    vector<ull> tags;
+    cache_line(int associativity):associativity(associativity){
+        tags.resize(associativity);
+        valid.resize(associativity,0);
+    }
     // TODO: Define data structures for cache line
     // - Valid bits for each way
     // - Tags for each way
@@ -39,6 +47,19 @@ void parse_cache_config(const string &path_cache) {
 
 
 void parse_reference_list(const string &path_ref) {
+    ifstream fin;
+    fin.open(path_ref,ios::in);
+    string tmp;
+    ull addr,converted;
+    fin >> tmp >> tmp;
+    fin >> tmp;
+    while(tmp != ".end"){
+        addr = stoull(tmp,nullptr,2);
+        converted = addr >> offset_bits;
+        reference.push_back(converted);
+        refstring.push_back(tmp);
+        fin >> tmp;
+    }
     // TODO: Process memory access sequence
     // - Read addresses and validate
     // - Store both original and converted forms
@@ -49,9 +70,11 @@ void parse_reference_list(const string &path_ref) {
 
 ull getIdx(ull addr, ull Mask) {
     // TODO: Extract index from address using mask
+    return addr & Mask;
 }
 
 int update_Cache(ull addr, int line, ull Mask) {
+    return 0;
     // TODO: Handle cache access
     // - Find cache line using index
     // - Check ways in line for hit
@@ -77,15 +100,15 @@ void output(const string &path_rpt, ull Mask) {
 
 int main(int argc, char *argv[]){
     string config,output,input;
-    // for(int i=0;i<argc;i++){
-    //     cout << argv[i] << endl;
-    // }
     config = argv[1];
     input = argv[2];
     output = argv[3];
     parse_cache_config(config);
     parse_reference_list(input);
-
+    ull mask = 1ull << indexing_bits;
+    for(auto it=reference.begin();it!=reference.end();it++){
+        update_Cache(*it,getIdx(*it,mask),mask);
+    }
 
     return 0;
 }
