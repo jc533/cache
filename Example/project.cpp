@@ -101,7 +101,7 @@ int update_Cache(ull addr, int line) {
     int replace_way = clock_replacement(*c);
     c->tags[replace_way] = tag;
     c->reference[replace_way] = 1;
-    c->valid[replace_way] = 1;
+    c->valid[replace_way] = 1; 
     return 0;
     // TODO: Handle cache access
     // - Find cache line using index
@@ -122,7 +122,7 @@ void output(const string &path_rpt) {
     fout << "Offset bit count: " << offset_bits << "\n";
     fout << "Indexing bit count: " << indexing_bits << "\n";
     fout << "Indexing bits:";
-    for(int i=indexing_bits;i>0;i--){
+    for(int i=indexing_bits;i>=0;i--){
         fout<<" "<<(i+offset_bits);
     }
     fout << "\n\n";
