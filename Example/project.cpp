@@ -122,7 +122,7 @@ void output(const string &path_rpt) {
     fout << "Offset bit count: " << offset_bits << "\n";
     fout << "Indexing bit count: " << indexing_bits << "\n";
     fout << "Indexing bits:";
-    for(int i=0;i<indexing_bits;i++){
+    for(int i=indexing_bits;i>0;i--){
         fout<<" "<<(i+offset_bits);
     }
     fout << "\n\n";
