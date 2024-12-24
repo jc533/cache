@@ -117,12 +117,12 @@ void output(const string &path_rpt) {
     fout << "Address bits: "<< Address_bits << "\n";
     fout << "Block size: "<< Block_size << "\n";
     fout << "Cache sets: "<< Cache_sets << "\n";
-    fout << "Associativity:  "<< Associativity << "\n";
+    fout << "Associativity: "<< Associativity << "\n";
     fout << "\n\n";
     fout << "Offset bit count: " << offset_bits << "\n";
     fout << "Indexing bit count: " << indexing_bits << "\n";
     fout << "Indexing bits:";
-    for(int i=indexing_bits;i>=0;i--){
+    for(int i=indexing_bits-1;i>=0;i--){
         fout<<" "<<(i+offset_bits);
     }
     fout << "\n\n";
