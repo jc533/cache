@@ -16,11 +16,13 @@ vector<bool> results;
 struct cache_line {    // Represents a cache line (equivalent to a set)
     int associativity;
     vector<bool> valid;
+    vector<bool> reference;
     vector<ull> tags;
     int clock_pointer;
     cache_line(int associativity):associativity(associativity),clock_pointer(0){
         tags.resize(associativity);
         valid.resize(associativity,0);
+        reference.resize(associativity);
     }
     // TODO: Define data structures for cache line
     // - Valid bits for each way
@@ -69,8 +71,8 @@ void parse_reference_list(const string &path_ref) {
 
 int clock_replacement(cache_line &cache_set) {
     int *i = &cache_set.clock_pointer;
-    while(cache_set.valid[*i]==1){
-        cache_set.valid[*i] = 0;
+    while(cache_set.reference[*i]==1){
+        cache_set.reference[*i] = 0;
         *i= (*i+1)%cache_set.associativity;
     }
     return *i;
@@ -91,13 +93,14 @@ int update_Cache(ull addr, int line) {
     cache_line *c = &Cache[line];
     ull tag = addr>>indexing_bits;
     for(int i=0;i<c->tags.size();i++){
-        if(c->tags[i] == tag){
-            c->valid[i] = 1;
+        if(c->valid[i] && c->tags[i] == tag){
+            c->reference[i] = 1;
             return 1;
         }
     }
     int replace_way = clock_replacement(*c);
     c->tags[replace_way] = tag;
+    c->reference[replace_way] = 1;
     c->valid[replace_way] = 1;
     return 0;
     // TODO: Handle cache access
@@ -126,7 +129,7 @@ void output(const string &path_rpt) {
     fout << ".benchmark " << testcase <<"\n";
     for(int i=0;i<results.size();i++){
         fout << refstring[i] << " ";
-        miss += results[i];
+        miss += (1-results[i]);
         fout << (results[i] ? "hit" : "miss") << "\n";
     }
     fout <<".end\n";
